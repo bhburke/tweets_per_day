@@ -1,16 +1,22 @@
-$(function(){
-	console.log("page loaded getting tweets");
-	var tweet_box = $('a[data-element-term="tweet_stats"]');
-	var username = $(tweet_box).attr('href').substring(1);
-	get_tweets(username, tweet_box);
 
-});
+console.log("page loaded getting tweets");
+var tweet_box = $('a[data-element-term="tweet_stats"]');
+var username = $(tweet_box).attr('href').substring(1);
+get_tweets(username, tweet_box);
 
-$(document).on('DOMNodeInserted', 'a[data-element-term="tweet_stats"]', function(){
+
+$(document).on('DOMNodeInserted', 'div#profile_popup', function(){
 	console.log("new thing loaded");
-	var tweet_box = $('a[data-element-term="tweet_stats"]');
+	var tweet_box = $('div#profile_popup > a[data-element-term="tweet_stats"]');
+
+	if(tweet_box.attr("modified") === undefined){
+		console.log("gonna modify this");
+	}
+	else{
+		console.log(tweet_box);
+	}
 	var username = $(tweet_box).attr('href').substring(1);
-	get_tweets(username, tweet_box);
+	//get_tweets(username, tweet_box);
 });
 
 function get_tweets(username, box){
@@ -28,10 +34,9 @@ function get_tweets(username, box){
 		},
 		error:function(response){
 			console.log(response);
-		},
+		}
 	});
 
-	console.log(request);
 }
 
 function parse_tweets(response, box){
@@ -46,6 +51,7 @@ function parse_tweets(response, box){
 	var ratio = Math.round(num_tweets/days*100)/100
 
 	console.log(num_tweets);
+	box.attr("modified", "1");
 	box.html("<strong>"+ratio+"</strong> Tweets / day");
 
 
