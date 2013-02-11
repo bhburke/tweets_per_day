@@ -96,6 +96,7 @@ function modify_box(user_object, box){
 		
 	console.log(user_object.screen_name+" tweets "+ratio+" times per day");
 	box.attr("modified", "1");
-	box.html("<strong>"+ratio+"</strong> Tweets / day");
+    box.attr("title", num_tweets+" in "+days+" days");
+    box.html("<strong>"+ratio+"</strong> Tweets / day");
 
 }
