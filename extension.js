@@ -1,17 +1,23 @@
 
 var tweet_box_selector = 'a[data-element-term="tweet_stats"]';
+
+// Apply to any divs on the page now
 var tweet_box = $(tweet_box_selector);
 get_tweets_per_day(tweet_box);
 
 
-$(document).on('DOMNodeInserted', 'div#profile_popup', function(){
-    var tweet_box = $(this).find(tweet_box_selector);
-    
-	if(tweet_box.attr("modified") === undefined){
-		get_tweets_per_day(tweet_box)
-	}
-
-});
+// Apply to any divs added to the page in the future
+var insertListener = function(event){
+  if (event.animationName == "nodeInserted") {
+    var tweet_box = $(event.target);
+    if(tweet_box.attr("modified") === undefined){
+        get_tweets_per_day(tweet_box)
+    }
+  }
+}
+document.addEventListener("animationstart", insertListener, false); // standard + firefox
+document.addEventListener("MSAnimationStart", insertListener, false); // IE
+document.addEventListener("webkitAnimationStart", insertListener, false); // Chrome + Safari
 
 // Modify box to show tweets/day for username
 function get_tweets_per_day(box){

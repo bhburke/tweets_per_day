@@ -12,7 +12,8 @@
   "content_scripts": [
     {
       "matches": ["*://*.twitter.com/*"],
-      "js": ["jquery.min.js", "extension.js"]
+      "js": ["jquery.min.js", "extension.js"],
+      "css": ["detect_insertion.css"]
     }
  ] 
 }
