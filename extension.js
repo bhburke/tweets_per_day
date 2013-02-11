@@ -1,22 +1,19 @@
 
 console.log("Page loaded. Getting tweets / day");
-var tweet_box = $('a[data-element-term="tweet_stats"]');
+var tweet_box_selector = 'a[data-element-term="tweet_stats"]';
+var tweet_box = $(tweet_box_selector);
 var username = $(tweet_box).attr('href').substring(1);
 get_tweets_per_day(username, tweet_box);
 
 
 $(document).on('DOMNodeInserted', 'div#profile_popup', function(){
-	console.log("new thing loaded");
-	var tweet_box = $('div#profile_popup > a[data-element-term="tweet_stats"]');
-
+    var tweet_box = $(this).find('a[data-element-term="tweet_stats"]');
+    
 	if(tweet_box.attr("modified") === undefined){
-		console.log("gonna modify this");
+        var username = $(tweet_box).attr('href').substring(1);
+		get_tweets_per_day(username, tweet_box)
 	}
-	else{
-		console.log(tweet_box);
-	}
-	var username = $(tweet_box).attr('href').substring(1);
-	//get_tweets_per_day(username, tweet_box);
+    
 });
 
 // Modify box to show tweets/day for username
