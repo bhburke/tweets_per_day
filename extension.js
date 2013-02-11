@@ -1,23 +1,22 @@
 
-console.log("Page loaded. Getting tweets / day");
 var tweet_box_selector = 'a[data-element-term="tweet_stats"]';
 var tweet_box = $(tweet_box_selector);
-var username = $(tweet_box).attr('href').substring(1);
-get_tweets_per_day(username, tweet_box);
+get_tweets_per_day(tweet_box);
 
 
 $(document).on('DOMNodeInserted', 'div#profile_popup', function(){
-    var tweet_box = $(this).find('a[data-element-term="tweet_stats"]');
+    var tweet_box = $(this).find(tweet_box_selector);
     
 	if(tweet_box.attr("modified") === undefined){
-        var username = $(tweet_box).attr('href').substring(1);
-		get_tweets_per_day(username, tweet_box)
+		get_tweets_per_day(tweet_box)
 	}
-    
+
 });
 
 // Modify box to show tweets/day for username
-function get_tweets_per_day(username, box){
+function get_tweets_per_day(box){
+    var username = box.attr('href').substring(1);
+
 	chrome.storage.sync.get(username, function(data) {
 		var user_object = data[username];
 		
@@ -80,12 +79,11 @@ function modify_box(user_object, box){
 	var created_at = new Date(user_object.created_at);
 	var difference = today - created_at;
 	var days = Math.round(difference/(1000*60*60*24));
-	console.log(days);
 	var num_tweets = user_object.statuses_count;
 
 	var ratio = Math.round(num_tweets/days*100)/100;
 		
-	console.log(num_tweets);
+	console.log(user_object.screen_name+" tweets "+ratio+" times per day");
 	box.attr("modified", "1");
 	box.html("<strong>"+ratio+"</strong> Tweets / day");
 
