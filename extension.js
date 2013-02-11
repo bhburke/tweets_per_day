@@ -1,5 +1,6 @@
 
 var tweet_box_selector = 'a[data-element-term="tweet_stats"]';
+var days_to_keep_cache = 3;
 
 // Apply to any divs on the page now
 var tweet_box = $(tweet_box_selector);
@@ -29,7 +30,10 @@ function get_tweets_per_day(box){
 		if (user_object == undefined) {
 			console.log(username+" is not cached. Perform api call");
 			make_api_call(username, box);
-		} else {
+		} else if (user_object.date_retrieved == undefined || Date() - user_object.date_retrieved > 60*60*days_to_keep_cache) {
+            console.log(username+"'s data is too old. Refetching from api");
+            make_api_call(username, box);
+        } else {
 			console.log(username+" is cached. Just use that info");
 			modify_box(user_object, box);
 		}
@@ -67,6 +71,7 @@ function cache_response(username, response, box) {
   }
 
   var user_object = response[0];
+  user_object.date_retrieved = new Date();
   console.log("Caching "+username+" : ", user_object);;
 
   // Save it using the Chrome extension storage API, then use that value
