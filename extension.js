@@ -26,28 +26,31 @@ function get_tweets_per_day(box){
 
 	chrome.storage.sync.get(username, function(data) {
 		var user_object = data[username];
-		
+		console.log("Cached data:");
+		console.log(data);
 		if (user_object == undefined) {
 			console.log(username+" is not cached. Perform api call");
 			make_api_call(username, box);
-		} else if (user_object.date_retrieved == undefined || Date() - user_object.date_retrieved > 60*60*days_to_keep_cache) {
+		} else if (user_object.date_retrieved == undefined || $.isEmptyObject(user_object.date_retrieved) || Date() - user_object.date_retrieved > 60*60*days_to_keep_cache) {
             console.log(username+"'s data is too old. Refetching from api");
             make_api_call(username, box);
         } else {
 			console.log(username+" is cached. Just use that info");
+			console.log(username+" has a date retrieved of ",user_object.date_retrieved);
 			modify_box(user_object, box);
 		}
 	});
 }
 
-// Get info about username, then modify box
+// Get tweets for username, then modify box
 function make_api_call(username, box) {
 	console.log("Querying API for "+username);
 	var request = $.ajax({
-		url: "https://api.twitter.com/1/users/lookup.json",
+		url: "https://api.twitter.com/1/statuses/user_timeline.json",
 		type: "GET",
 		async: false,
 		data:{
+			"include_rts": "true",
 			"screen_name": username
 		},
 		dataType:"json",
@@ -70,33 +73,32 @@ function cache_response(username, response, box) {
   	return;
   }
 
-  var user_object = response[0];
-  user_object.date_retrieved = new Date();
-  console.log("Caching "+username+" : ", user_object);;
+  var last_tweet = response[response.length-1];
+  last_tweet.date_retrieved = new Date();
+  console.log("Caching "+username+" : ", last_tweet.created_at);
 
   // Save it using the Chrome extension storage API, then use that value
   var data_to_save = {};
-  data_to_save[username] = user_object;
+  data_to_save[username] = last_tweet.created_at;
   chrome.storage.sync.set(data_to_save, function() {
   	console.log("Response cached");
-    modify_box(user_object, box);
+    modify_box(last_tweet.created_at, box);
   });
 }
 
-// Modify box to show tweets/day for user_object
-function modify_box(user_object, box){
+// Modify box to show tweets/day given the date of a user's 20th tweet
+function modify_box(last_tweet_date, box){
 
 	var today = new Date();
-	var created_at = new Date(user_object.created_at);
+	var created_at = new Date(last_tweet_date);
 	var difference = today - created_at;
-	var days = Math.round(difference/(1000*60*60*24));
-	var num_tweets = user_object.statuses_count;
+	var days = difference/(1000*60*60*24);
+	var num_tweets = 20;
 
 	var ratio = Math.round(num_tweets/days*100)/100;
 		
-	console.log(user_object.screen_name+" tweets "+ratio+" times per day");
+	console.log("User tweets "+ratio+" times per day");
 	box.attr("modified", "1");
-    box.attr("title", num_tweets+" in "+days+" days");
     box.html("<strong>"+ratio+"</strong> Tweets / day");
 
 }
