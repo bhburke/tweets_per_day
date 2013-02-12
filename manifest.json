@@ -2,7 +2,7 @@
   "manifest_version": 2,
 
   "name": "Tweets Per Day",
-  "description": "This extension demonstrates a browser action with kittens.",
+  "description": "Replaces a Twitter user's number of total Tweets on their profile with their average number of Tweets per day. Hover over a user's Tweets per day to see their total number of Tweets",
   "version": "0.1",
   "icons" :{
     "128": "icon-128.png",
