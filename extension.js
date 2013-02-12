@@ -99,6 +99,7 @@ function modify_box(last_tweet_date, box){
 		
 	console.log("User tweets "+ratio+" times per day");
 	box.attr("modified", "1");
+    box.attr("title", $.trim(box.text()));
     box.html("<strong>"+ratio+"</strong> Tweets / day");
 
 }
