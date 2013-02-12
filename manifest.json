@@ -4,7 +4,10 @@
   "name": "Tweets Per Day",
   "description": "This extension demonstrates a browser action with kittens.",
   "version": "0.1",
-
+  "icons" :{
+    "128": "icon-128.png",
+    "48": "icon-48.png"
+  },
   "permissions": [
     "*://twitter.com/*",
     "storage"
