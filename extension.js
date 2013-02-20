@@ -1,9 +1,13 @@
 
 var tweet_box_selector = 'a[data-element-term="tweet_stats"]';
+var username_span_selector = 'a.account-group';
 var days_to_keep_cache = 2;
 
 // Apply to any divs on the page now
 apply_to_box($(tweet_box_selector));
+$(username_span_selector).each(function(){
+    apply_to_username_span($(this));
+});
 
 
 // Apply to any divs added to the page in the future
@@ -21,6 +25,14 @@ function apply_to_box(tweet_box) {
     var username = tweet_box.attr('href').substring(1);
     get_tweets_per_day(username, function(tweets_per_day){
         modify_box(tweets_per_day, tweet_box);
+    });
+}
+
+// Apply TPD to the given username span
+function apply_to_username_span(username_span) {
+    var username = username_span.attr('href').substring(1);
+    get_tweets_per_day(username, function(tweets_per_day){
+        modify_username_span(tweets_per_day, username_span);
     });
 }
 
@@ -59,7 +71,7 @@ function make_api_call(username, callback) {
 			cache_response(username, response, callback);
 		},
 		error:function(response){
-			console.log("Tweets Per Day API call failed. ",response);
+			console.log("Tweets Per Day API call for "+username+" failed. ",response);
 		}
 	});
 
@@ -107,9 +119,20 @@ function calculate_tweets_per_day(user_data) {
 // Modify box to show tweets/day given the date of a user's 20th tweet
 function modify_box(tweets_per_day, box){
 		
-	//console.log("User tweets "+ratio+" times per day");
-	box.attr("modified", "1");
-    box.attr("title", $.trim(box.text()));
-    box.html("<strong>"+tweets_per_day+"</strong> Tweets / day");
+	if (box.attr("modified") != "1") {
+        box.attr("modified", "1");
+        box.attr("title", $.trim(box.text()));
+        box.html("<strong>"+tweets_per_day+"</strong> Tweets / day");
+    }
+
+}
+
+// Modify username by appending tweets/day
+function modify_username_span(tweets_per_day, username_span){
+
+    if (username_span.attr("modified") != "1") {
+        username_span.attr("modified", "1");
+        username_span.attr("title", " "+tweets_per_day+" Tweets per Day");
+    }
 
 }
