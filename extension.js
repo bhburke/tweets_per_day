@@ -12,8 +12,10 @@ $(username_span_selector).each(function(){
 
 // Apply to any divs added to the page in the future
 var insertListener = function(event){
-  if (event.animationName == "nodeInserted") {
+  if (event.animationName == "tweetBoxInserted") {
     apply_to_box($(event.target));
+  } else if (event.animationName == "usernameInserted") {
+    apply_to_username_span($(event.target));
   }
 }
 document.addEventListener("animationstart", insertListener, false); // standard + firefox
@@ -57,7 +59,11 @@ function get_tweets_per_day(username, callback){
 
 // Get tweets for username, calculate tweets/day, handle w/ callback
 function make_api_call(username, callback) {
-	//console.log("Querying API for "+username);
+    if (username.length == 0) {
+        return;
+    }
+
+	console.log("Looking up tweets per day for "+username);
 	var request = $.ajax({
 		url: "https://api.twitter.com/1/statuses/user_timeline.json",
 		type: "GET",
@@ -71,7 +77,7 @@ function make_api_call(username, callback) {
 			cache_response(username, response, callback);
 		},
 		error:function(response){
-			console.log("Tweets Per Day API call for "+username+" failed. ",response);
+			//console.log("Tweets Per Day API call for "+username+" failed. ",response);
 		}
 	});
 

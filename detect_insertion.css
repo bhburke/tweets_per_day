@@ -1,25 +1,25 @@
 /* set up the keyframes */
-@keyframes nodeInserted {  
+@keyframes tweetBoxInserted {  
   from { clip: rect(1px, auto, auto, auto); }
   to { clip: rect(0px, auto, auto, auto); }  
 }
 
-@-moz-keyframes nodeInserted {  
+@-moz-keyframes tweetBoxInserted {  
   from { clip: rect(1px, auto, auto, auto); }
   to { clip: rect(0px, auto, auto, auto); }
 }
 
-@-webkit-keyframes nodeInserted {  
+@-webkit-keyframes tweetBoxInserted {  
   from { clip: rect(1px, auto, auto, auto); }
   to { clip: rect(0px, auto, auto, auto); }
 }
 
-@-ms-keyframes nodeInserted {  
+@-ms-keyframes tweetBoxInserted {  
   from { clip: rect(1px, auto, auto, auto); }
   to { clip: rect(0px, auto, auto, auto); }
 }
 
-@-o-keyframes nodeInserted {  
+@-o-keyframes tweetBoxInserted {  
   from { clip: rect(1px, auto, auto, auto); }
   to { clip: rect(0px, auto, auto, auto); }
 }
@@ -30,9 +30,48 @@ a[data-element-term="tweet_stats"] {
     -ms-animation-duration: 0.001s;
     -moz-animation-duration: 0.001s;
     -webkit-animation-duration: 0.001s;
-    animation-name: nodeInserted;
-    -o-animation-name: nodeInserted;
-    -ms-animation-name: nodeInserted;        
-    -moz-animation-name: nodeInserted;
-    -webkit-animation-name: nodeInserted;
+    animation-name: tweetBoxInserted;
+    -o-animation-name: tweetBoxInserted;
+    -ms-animation-name: tweetBoxInserted;        
+    -moz-animation-name: tweetBoxInserted;
+    -webkit-animation-name: tweetBoxInserted;
+}
+
+/* set up the keyframes */
+@keyframes usernameInserted {  
+  from { clip: rect(1px, auto, auto, auto); }
+  to { clip: rect(0px, auto, auto, auto); }  
+}
+
+@-moz-keyframes usernameInserted {  
+  from { clip: rect(1px, auto, auto, auto); }
+  to { clip: rect(0px, auto, auto, auto); }
+}
+
+@-webkit-keyframes usernameInserted {  
+  from { clip: rect(1px, auto, auto, auto); }
+  to { clip: rect(0px, auto, auto, auto); }
+}
+
+@-ms-keyframes usernameInserted {  
+  from { clip: rect(1px, auto, auto, auto); }
+  to { clip: rect(0px, auto, auto, auto); }
+}
+
+@-o-keyframes usernameInserted {  
+  from { clip: rect(1px, auto, auto, auto); }
+  to { clip: rect(0px, auto, auto, auto); }
+}
+
+span.username {
+    animation-duration: 0.001s;
+    -o-animation-duration: 0.001s;
+    -ms-animation-duration: 0.001s;
+    -moz-animation-duration: 0.001s;
+    -webkit-animation-duration: 0.001s;
+    animation-name: usernameInserted;
+    -o-animation-name: usernameInserted;
+    -ms-animation-name: usernameInserted;        
+    -moz-animation-name: usernameInserted;
+    -webkit-animation-name: usernameInserted;
 }
