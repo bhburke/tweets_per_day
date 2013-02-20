@@ -1,6 +1,6 @@
 
 var tweet_box_selector = 'a[data-element-term="tweet_stats"]';
-var username_span_selector = 'a.account-group';
+var username_span_selector = 'span.username';
 var days_to_keep_cache = 2;
 
 // Apply to any divs on the page now
@@ -30,7 +30,7 @@ function apply_to_box(tweet_box) {
 
 // Apply TPD to the given username span
 function apply_to_username_span(username_span) {
-    var username = username_span.attr('href').substring(1);
+    var username = username_span.find('b').text();
     get_tweets_per_day(username, function(tweets_per_day){
         modify_username_span(tweets_per_day, username_span);
     });
@@ -132,7 +132,7 @@ function modify_username_span(tweets_per_day, username_span){
 
     if (username_span.attr("modified") != "1") {
         username_span.attr("modified", "1");
-        username_span.attr("title", " "+tweets_per_day+" Tweets per Day");
+        username_span.append(" ("+tweets_per_day+" tweets/day)");
     }
 
 }
