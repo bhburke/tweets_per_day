@@ -45,7 +45,7 @@ function make_api_call(username, box) {
 	var request = $.ajax({
 		url: "https://api.twitter.com/1/statuses/user_timeline.json",
 		type: "GET",
-		async: false,
+		async: true,
 		data:{
 			"include_rts": "true",
 			"screen_name": username
