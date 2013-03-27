@@ -40,13 +40,13 @@ function apply_to_username_span(username_span) {
 
 // Get the number of tweets per day made by username, handle in callback
 function get_tweets_per_day(username, callback){
-	chrome.storage.sync.get(username, function(data) {
+	chrome.storage.local.get(username, function(data) {
 		var user_data = data[username];
 		if (user_data == undefined ||
             user_data.date_retrieved == undefined ||
             $.isEmptyObject(user_data.date_retrieved) ||
             Date() - new Date(user_data.date_retrieved) > 60*60*days_to_keep_cache) {
-            
+
             make_api_call(username, callback);
         } else {
             //console.log(username + " is cached");
@@ -102,7 +102,14 @@ function cache_response(username, response, callback) {
   // Save it using the Chrome extension storage API, then use that value
   var data_to_save = {};
   data_to_save[username] = user_data;
-  chrome.storage.sync.set(data_to_save, function(){});
+  chrome.storage.local.set(data_to_save, function(){
+    if (chrome.runtime.lastError &&
+        chrome.runtime.lastError.message &&
+        chrome.runtime.lastError.message == "MAX_ITEMS quota exceeded.") {
+      console.log("Cache full. Clearing");
+      chrome.storage.local.clear();
+    }
+  });
 
   var tpd = calculate_tweets_per_day(user_data);
   callback(tpd);
@@ -124,7 +131,7 @@ function calculate_tweets_per_day(user_data) {
 
 // Modify box to show tweets/day given the date of a user's 20th tweet
 function modify_box(tweets_per_day, box){
-		
+
 	if (box.attr("modified") != "1") {
         box.attr("modified", "1");
         box.attr("title", $.trim(box.text()));
