@@ -8,13 +8,13 @@ var cached_responses;
 chrome.storage.local.get("cache", function(data){
   console.log("chrome local storage is: ");
   console.log(data);
-  if(data==undefined){
+  if(data==undefined || data["cache"]==undefined){
     chrome.storage.local.clear();
     chrome.storage.local.set({"cache":{}}, null);
     cached_responses = {};
   }
   else{
-    cached_responses = data["cache"];
+    cached_responses = data.cache;
   }
   console.log("cached_responses is: ");
   console.log(cached_responses);
@@ -125,7 +125,7 @@ function cache_response(username, response, callback) {
         chrome.runtime.lastError.message == "MAX_ITEMS quota exceeded.") {
       console.log("Cache full. Making room");
       clear_expired_cache_entries();
-      chrome.storage.local.set(date_to_save,function(){
+      chrome.storage.local.set(data_to_save,function(){
         console.log("Saving again");
       });
     }
