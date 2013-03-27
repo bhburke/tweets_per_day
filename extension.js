@@ -2,12 +2,31 @@
 var tweet_box_selector = 'a[data-element-term="tweet_stats"]';
 var username_span_selector = 'span.username';
 var days_to_keep_cache = 2;
+var cached_responses;
 
-// Apply to any divs on the page now
-apply_to_box($(tweet_box_selector));
-$(username_span_selector).each(function(){
-    apply_to_username_span($(this));
+//load the cache
+chrome.storage.local.get("cache", function(data){
+  console.log("chrome local storage is: ");
+  console.log(data);
+  if(data==undefined){
+    chrome.storage.local.clear();
+    chrome.storage.local.set({"cache":{}}, null);
+    cached_responses = {};
+  }
+  else{
+    cached_responses = data["cache"];
+  }
+  console.log("cached_responses is: ");
+  console.log(cached_responses);
+
+  // Apply to any divs on the page now
+    apply_to_box($(tweet_box_selector));
+    $(username_span_selector).each(function(){
+        apply_to_username_span($(this));
+    });
 });
+
+
 
 
 // Apply to any divs added to the page in the future
@@ -40,8 +59,7 @@ function apply_to_username_span(username_span) {
 
 // Get the number of tweets per day made by username, handle in callback
 function get_tweets_per_day(username, callback){
-	chrome.storage.local.get(username, function(data) {
-		var user_data = data[username];
+		var user_data = cached_responses[username];
 		if (user_data == undefined ||
             user_data.date_retrieved == undefined ||
             $.isEmptyObject(user_data.date_retrieved) ||
@@ -49,12 +67,11 @@ function get_tweets_per_day(username, callback){
 
             make_api_call(username, callback);
         } else {
-            //console.log(username + " is cached");
+            console.log(username + " is cached");
             // Calculate tweets per day based on tweet dates
             tpd = calculate_tweets_per_day(user_data);
             callback(tpd);
 		}
-	});
 }
 
 // Get tweets for username, calculate tweets/day, handle w/ callback
@@ -100,19 +117,45 @@ function cache_response(username, response, callback) {
   //console.log("caching " + username + " ",user_data);
 
   // Save it using the Chrome extension storage API, then use that value
-  var data_to_save = {};
-  data_to_save[username] = user_data;
+  cached_responses[username] = user_data;
+  var data_to_save = {"cache": cached_responses};
   chrome.storage.local.set(data_to_save, function(){
     if (chrome.runtime.lastError &&
         chrome.runtime.lastError.message &&
         chrome.runtime.lastError.message == "MAX_ITEMS quota exceeded.") {
-      console.log("Cache full. Clearing");
-      chrome.storage.local.clear();
+      console.log("Cache full. Making room");
+      clear_expired_cache_entries();
+      chrome.storage.local.set(date_to_save,function(){
+        console.log("Saving again");
+      });
     }
   });
 
   var tpd = calculate_tweets_per_day(user_data);
   callback(tpd);
+}
+
+function clear_expired_cache_entries(){
+  var oldest_date = new Date();
+  var oldest_entry = "";
+  var made_space = false;
+  $.each(cached_responses, function(username, user_data){
+    if (user_data == undefined ||
+            user_data.date_retrieved == undefined ||
+            $.isEmptyObject(user_data.date_retrieved) ||
+            Date() - new Date(user_data.date_retrieved) > 60*60*days_to_keep_cache) {
+        delete cached_responses[username];
+      made_space = true;
+    }
+    else if(new Date(user_data.date_retrieved) < oldest_date){
+      oldest_date = new Date(user_data.date_retrieved);
+      oldest_username = username;
+    }
+  });
+  if(!made_space){
+      delete cached_responses[oldest_username];
+    }
+  
 }
 
 // Take stored data about user and return their estimated tweets/day
