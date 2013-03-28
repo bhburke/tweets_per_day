@@ -3,7 +3,7 @@
 
   "name": "Tweets Per Day",
   "description": "A minimal extension that replaces \"Total Tweets\" with \"Tweets per Day\" on Twitter.",
-  "version": "0.9",
+  "version": "1.1",
   "icons" :{
     "128": "icon-128.png",
     "48": "icon-48.png"
