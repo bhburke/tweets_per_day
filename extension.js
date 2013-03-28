@@ -1,4 +1,3 @@
-
 var tweet_box_selector = 'a[data-element-term="tweet_stats"]';
 var username_span_selector = 'span.username';
 var days_to_keep_cache = 2;
@@ -6,8 +5,6 @@ var cached_responses;
 
 //load the cache
 chrome.storage.local.get("cache", function(data){
-  console.log("chrome local storage is: ");
-  console.log(data);
   if(data==undefined || data["cache"]==undefined){
     chrome.storage.local.clear();
     chrome.storage.local.set({"cache":{}}, null);
@@ -16,8 +13,6 @@ chrome.storage.local.get("cache", function(data){
   else{
     cached_responses = data.cache;
   }
-  console.log("cached_responses is: ");
-  console.log(cached_responses);
 
   // Apply to any divs on the page now
     apply_to_box($(tweet_box_selector));
@@ -67,7 +62,6 @@ function get_tweets_per_day(username, callback){
 
             make_api_call(username, callback);
         } else {
-            console.log(username + " is cached");
             // Calculate tweets per day based on tweet dates
             tpd = calculate_tweets_per_day(user_data);
             callback(tpd);
@@ -126,7 +120,7 @@ function cache_response(username, response, callback) {
       console.log("Cache full. Making room");
       clear_expired_cache_entries();
       chrome.storage.local.set(data_to_save,function(){
-        console.log("Saving again");
+        //console.log("Saving again");
       });
     }
   });
