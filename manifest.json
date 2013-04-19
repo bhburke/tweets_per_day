@@ -1,5 +1,5 @@
 {
-  "manifest_version": 3,
+  "manifest_version": 2,
 
   "name": "Tweets Per Day",
   "description": "A minimal extension that replaces \"Total Tweets\" with \"Tweets per Day\" on Twitter.",
