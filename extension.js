@@ -1,27 +1,29 @@
 var tweet_box_selector = 'a[data-element-term="tweet_stats"]';
 var username_span_selector = 'span.username';
-var days_to_keep_cache = 2;
-var cached_responses;
+var hours_to_keep_cache = 12;
+var cached_responses = {};
 
 //load the cache
 chrome.storage.local.get("cache", function(data){
-  if(data==undefined || data["cache"]==undefined){
-    chrome.storage.local.clear();
-    chrome.storage.local.set({"cache":{}}, null);
-    cached_responses = {};
-  }
-  else{
+  if (data && data.cache) {
     cached_responses = data.cache;
+    console.log("cache",cached_responses);
+  } else {
+    chrome.storage.local.clear(function(){
+      console.log("cleared cache");
+      chrome.storage.local.set({"cache":{}}, function(){
+        console.log("reset cache");
+        cached_responses = {};
+      });
+    });
   }
 
   // Apply to any divs on the page now
-    apply_to_box($(tweet_box_selector));
-    $(username_span_selector).each(function(){
-        apply_to_username_span($(this));
-    });
+  apply_to_box($(tweet_box_selector));
+  $(username_span_selector).each(function(){
+    apply_to_username_span($(this));
+  });
 });
-
-
 
 
 // Apply to any divs added to the page in the future
@@ -32,9 +34,13 @@ var insertListener = function(event){
     apply_to_username_span($(event.target));
   }
 }
-document.addEventListener("animationstart", insertListener, false); // standard + firefox
-document.addEventListener("MSAnimationStart", insertListener, false); // IE
 document.addEventListener("webkitAnimationStart", insertListener, false); // Chrome + Safari
+
+var age = function(dateString) {
+  var now = new Date();
+  var then = new Date(dateString);
+  return now - then;
+}
 
 // Apply TPD to the given tweet box
 function apply_to_box(tweet_box) {
@@ -55,24 +61,21 @@ function apply_to_username_span(username_span) {
 // Get the number of tweets per day made by username, handle in callback
 function get_tweets_per_day(username, callback){
 		var user_data = cached_responses[username];
-		if (user_data == undefined ||
-            user_data.date_retrieved == undefined ||
-            $.isEmptyObject(user_data.date_retrieved) ||
-            Date() - new Date(user_data.date_retrieved) > 60*60*days_to_keep_cache) {
-
-            make_api_call(username, callback);
-        } else {
-            // Calculate tweets per day based on tweet dates
-            tpd = calculate_tweets_per_day(user_data);
-            callback(tpd);
-		}
+    if (user_data && user_data.date_retrieved &&
+        age(user_data.date_retrieved) < 60*60*1000*hours_to_keep_cache) {
+      // Use cached user data
+      tpd = calculate_tweets_per_day(user_data);
+      callback(tpd);
+    } else {
+      make_api_call(username, callback);
+    }
 }
 
 // Get tweets for username, calculate tweets/day, handle w/ callback
 function make_api_call(username, callback) {
-    if (username.length == 0) {
-        return;
-    }
+  if (username.length === 0) {
+      return;
+  }
 
 	console.log("Looking up tweets per day for "+username);
 	var request = $.ajax({
@@ -88,7 +91,7 @@ function make_api_call(username, callback) {
 			cache_response(username, response, callback);
 		},
 		error:function(response){
-			//console.log("Tweets Per Day API call for "+username+" failed. ",response);
+			console.log("Tweets Per Day API call for "+username+" failed. ",response);
 		}
 	});
 
@@ -116,7 +119,7 @@ function cache_response(username, response, callback) {
   chrome.storage.local.set(data_to_save, function(){
     if (chrome.runtime.lastError &&
         chrome.runtime.lastError.message &&
-        chrome.runtime.lastError.message == "MAX_ITEMS quota exceeded.") {
+        chrome.runtime.lastError.message === "MAX_ITEMS quota exceeded.") {
       console.log("Cache full. Making room");
       clear_expired_cache_entries();
       chrome.storage.local.set(data_to_save,function(){
@@ -149,7 +152,7 @@ function clear_expired_cache_entries(){
   if(!made_space){
       delete cached_responses[oldest_username];
     }
-  
+
 }
 
 // Take stored data about user and return their estimated tweets/day
