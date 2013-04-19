@@ -1,9 +1,9 @@
-{  
-  "manifest_version": 2,
+{
+  "manifest_version": 3,
 
   "name": "Tweets Per Day",
   "description": "A minimal extension that replaces \"Total Tweets\" with \"Tweets per Day\" on Twitter.",
-  "version": "1.1",
+  "version": "1.2",
   "icons" :{
     "128": "icon-128.png",
     "48": "icon-48.png"
@@ -18,5 +18,5 @@
       "js": ["jquery.min.js", "extension.js"],
       "css": ["detect_insertion.css"]
     }
- ] 
+ ]
 }
