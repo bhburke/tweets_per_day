@@ -142,7 +142,6 @@ var tpd = function() {
     chrome.storage.local.get("cache", function(data){
       if (data && data.cache) {
         cache = data.cache;
-        console.log("cache",cache);
         callback();
       } else {
         chrome.storage.local.clear(function(){
