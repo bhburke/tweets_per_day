@@ -86,7 +86,7 @@ var tpd = function() {
     }
 
     var request = $.ajax({
-      url: "http://powerful-brook-6264.herokuapp.com/tweets/"+username+".json",
+      url: "https://powerful-brook-6264.herokuapp.com/tweets/"+username+".json",
       type: "GET",
       async: true,
       dataType:"json",
