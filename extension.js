@@ -89,9 +89,6 @@ var tpd = function() {
       url: "http://powerful-brook-6264.herokuapp.com/tweets/"+username+".json",
       type: "GET",
       async: true,
-      data:{
-        "include_rts": "true",
-      },
       dataType:"json",
       success:function(response){
         cache_response(username, response, callback);
