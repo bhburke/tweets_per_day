@@ -9,7 +9,7 @@
     "48": "icon-48.png"
   },
   "permissions": [
-    "*://twitter.com/*",
+    "*://*.herokuapp.com/*",
     "storage"
   ],
   "content_scripts": [

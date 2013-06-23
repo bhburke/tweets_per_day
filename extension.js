@@ -85,14 +85,12 @@ var tpd = function() {
         return;
     }
 
-    console.log("Looking up tweets per day for "+username);
     var request = $.ajax({
-      url: "https://api.twitter.com/1/statuses/user_timeline.json",
+      url: "http://powerful-brook-6264.herokuapp.com/tweets/"+username+".json",
       type: "GET",
       async: true,
       data:{
         "include_rts": "true",
-        "screen_name": username
       },
       dataType:"json",
       success:function(response){
