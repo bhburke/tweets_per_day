@@ -41,7 +41,7 @@ var tpd = function() {
   // Is the cached data valid and recent?
   var data_is_fresh = function(user_data) {
     return user_data && user_data.date_retrieved &&
-      age(user_data.date_retrieved) < 60*60*1000*hours_to_keep_cache;
+      age(user_data.date_retrieved) < 60*60*2000*hours_to_keep_cache;
   }
 
   // Take stored data about user and return their estimated tweets/day
